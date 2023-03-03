@@ -5,7 +5,7 @@ import {mergeSort} from '../sortingAlgorithms/sortingAlgorithms';
 export default function Sorting() {
 
     // Change this value for the speed of the animations.
-    const ANIMATION_SPEED_MS = 150;
+    const ANIMATION_SPEED_MS = 1;
 
     // Change this value for the number of bars (value) in the array.
     // const NUMBER_OF_ARRAY_BARS = 310;
@@ -16,17 +16,30 @@ export default function Sorting() {
     // This is the color of array bars that are being compared throughout the animations.
     const SECONDARY_COLOR = 'red';
 
+    let stop = false;
+
     const [array, setArray] = useState([]);
     useEffect(() => {
         resetArray();
         // eslint-disable-next-line
     }, [])
     const resetArray = () => {
+        stop=true
+        console.log("inside resetArray",stop);
         const arr = []
         for (let i = 0; i < 190; i++) {
             arr.push(randomElement(5, 600))
         }
         setArray(arr)
+        const arrayBars = document.getElementsByClassName('array-bar');
+        for(let i=0;i<arrayBars.length;i++){
+            arrayBars[i].style.backgroundColor='blue'
+        }
+        
+    }
+    const checkStop = ()=>{
+        stop=true
+        console.log("inside checkstop",stop);
     }
     const randomElement = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -36,27 +49,46 @@ export default function Sorting() {
 
     }
     const mergesort = () => {
+        // stop=false
         const animations = mergeSort(array);
+        const arrayBars = document.getElementsByClassName('array-bar');
         for (let i = 0; i < animations.length; i++) {
-            const arrayBars = document.getElementsByClassName('array-bar');
             const isColorChange = i % 3 !== 2;
+            console.log(i);
+            // if(stop){
+            //     console.log("inside Stop");
+            //     return
+            // }
+            // else{
+            //     console.log("stop else");
+            // }
             if (isColorChange) {
                 const [barOneIdx, barTwoIdx] = animations[i];
                 const barOneStyle = arrayBars[barOneIdx].style;
                 const barTwoStyle = arrayBars[barTwoIdx].style;
-                const color = i % 3 === 0 ? SECONDARY_COLOR : PRIMARY_COLOR;
+                const color = i % 3 === 0 ? SECONDARY_COLOR : PRIMARY_COLOR;                
                 setTimeout(() => {
+                    if(stop){
+                        console.log("inside Stop");
+                        return
+                    }
                     barOneStyle.backgroundColor = color;
                     barTwoStyle.backgroundColor = color;
                 }, i * ANIMATION_SPEED_MS);
-            } else {
+            } else {                
                 setTimeout(() => {
+                    if(stop){
+                        console.log("inside Stop");
+                        return
+                    }
                     const [barOneIdx, newHeight] = animations[i];
                     const barOneStyle = arrayBars[barOneIdx].style;
                     barOneStyle.height = `${newHeight}px`;
                 }, i * ANIMATION_SPEED_MS);
             }
         }
+
+        console.log("hfuhuhuh",stop);
     }
     const insertionSort = () => {
 
@@ -95,6 +127,7 @@ export default function Sorting() {
             <button onClick={quickSort} >Quick Sort</button>
             <button onClick={mergesort} >Merge Sort</button>
             <button onClick={testSortingAlgoritms} >Test Sorting Algoritms</button>
+            <button onClick={checkStop} >Stop</button>
         </div>
     )
 }
